@@ -171,13 +171,12 @@ class FunSetSuite extends FunSuite with Matchers {
   test("test map function") {
     new TestSets {
       val a = union(union(s1, s2), s3)
-      val predicate1 = (x: Int) => (x * 2) % 2 == 0
-      val predicate2 = (x: Int) => x == 1
 
-      val b = map(a, x => x * 2)
+      val b = map(a, x => x * 5)
 
       b(1) shouldBe false
-      b(3) shouldBe false
+      b(5) shouldBe true
+      b(10) shouldBe true
     }
   }
 
