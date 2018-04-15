@@ -32,6 +32,7 @@ class FunSetSuite extends FunSuite with Matchers {
     assert(message.take(5) == "hello")
   }
 
+
   /**
     * For ScalaTest tests, there exists a special equality operator "===" that
     * can be used inside "assert". If the assertion fails, the two values will
