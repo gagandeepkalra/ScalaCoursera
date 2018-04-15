@@ -1,51 +1,49 @@
 package funsets
 
-import org.scalatest.FunSuite
-
-
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.{FunSuite, Matchers}
 
 /**
- * This class is a test suite for the methods in object FunSets. To run
- * the test suite, you can either:
- *  - run the "test" command in the SBT console
- *  - right-click the file in eclipse and chose "Run As" - "JUnit Test"
- */
+  * This class is a test suite for the methods in object FunSets. To run
+  * the test suite, you can either:
+  *  - run the "test" command in the SBT console
+  *  - right-click the file in eclipse and chose "Run As" - "JUnit Test"
+  */
 @RunWith(classOf[JUnitRunner])
-class FunSetSuite extends FunSuite {
+class FunSetSuite extends FunSuite with Matchers {
 
   /**
-   * Link to the scaladoc - very clear and detailed tutorial of FunSuite
-   *
-   * http://doc.scalatest.org/1.9.1/index.html#org.scalatest.FunSuite
-   *
-   * Operators
-   *  - test
-   *  - ignore
-   *  - pending
-   */
+    * Link to the scaladoc - very clear and detailed tutorial of FunSuite
+    *
+    * http://doc.scalatest.org/1.9.1/index.html#org.scalatest.FunSuite
+    *
+    * Operators
+    *  - test
+    *  - ignore
+    *  - pending
+    */
 
   /**
-   * Tests are written using the "test" operator and the "assert" method.
-   */
-  // test("string take") {
-  //   val message = "hello, world"
-  //   assert(message.take(5) == "hello")
-  // }
+    * Tests are written using the "test" operator and the "assert" method.
+    */
+  test("string take") {
+    val message = "hello, world"
+    assert(message.take(5) == "hello")
+  }
 
   /**
-   * For ScalaTest tests, there exists a special equality operator "===" that
-   * can be used inside "assert". If the assertion fails, the two values will
-   * be printed in the error message. Otherwise, when using "==", the test
-   * error message will only say "assertion failed", without showing the values.
-   *
-   * Try it out! Change the values so that the assertion fails, and look at the
-   * error message.
-   */
-  // test("adding ints") {
-  //   assert(1 + 2 === 3)
-  // }
+    * For ScalaTest tests, there exists a special equality operator "===" that
+    * can be used inside "assert". If the assertion fails, the two values will
+    * be printed in the error message. Otherwise, when using "==", the test
+    * error message will only say "assertion failed", without showing the values.
+    *
+    * Try it out! Change the values so that the assertion fails, and look at the
+    * error message.
+    */
+  test("adding ints") {
+    assert(1 + 2 === 3)
+  }
 
 
   import FunSets._
@@ -55,23 +53,23 @@ class FunSetSuite extends FunSuite {
   }
 
   /**
-   * When writing tests, one would often like to re-use certain values for multiple
-   * tests. For instance, we would like to create an Int-set and have multiple test
-   * about it.
-   *
-   * Instead of copy-pasting the code for creating the set into every test, we can
-   * store it in the test class using a val:
-   *
-   *   val s1 = singletonSet(1)
-   *
-   * However, what happens if the method "singletonSet" has a bug and crashes? Then
-   * the test methods are not even executed, because creating an instance of the
-   * test class fails!
-   *
-   * Therefore, we put the shared values into a separate trait (traits are like
-   * abstract classes), and create an instance inside each test method.
-   *
-   */
+    * When writing tests, one would often like to re-use certain values for multiple
+    * tests. For instance, we would like to create an Int-set and have multiple test
+    * about it.
+    *
+    * Instead of copy-pasting the code for creating the set into every test, we can
+    * store it in the test class using a val:
+    *
+    * val s1 = singletonSet(1)
+    *
+    * However, what happens if the method "singletonSet" has a bug and crashes? Then
+    * the test methods are not even executed, because creating an instance of the
+    * test class fails!
+    *
+    * Therefore, we put the shared values into a separate trait (traits are like
+    * abstract classes), and create an instance inside each test method.
+    *
+    */
 
   trait TestSets {
     val s1 = singletonSet(1)
@@ -80,23 +78,23 @@ class FunSetSuite extends FunSuite {
   }
 
   /**
-   * This test is currently disabled (by using "ignore") because the method
-   * "singletonSet" is not yet implemented and the test would fail.
-   *
-   * Once you finish your implementation of "singletonSet", exchange the
-   * function "ignore" by "test".
-   */
+    * This test is currently disabled (by using "ignore") because the method
+    * "singletonSet" is not yet implemented and the test would fail.
+    *
+    * Once you finish your implementation of "singletonSet", exchange the
+    * function "ignore" by "test".
+    */
   test("singletonSet(1) contains 1") {
 
     /**
-     * We create a new instance of the "TestSets" trait, this gives us access
-     * to the values "s1" to "s3".
-     */
+      * We create a new instance of the "TestSets" trait, this gives us access
+      * to the values "s1" to "s3".
+      */
     new TestSets {
       /**
-       * The string argument of "assert" is a message that is printed in case
-       * the test fails. This helps identifying which assertion failed.
-       */
+        * The string argument of "assert" is a message that is printed in case
+        * the test fails. This helps identifying which assertion failed.
+        */
       assert(contains(s1, 1), "Singleton")
     }
   }
@@ -107,6 +105,65 @@ class FunSetSuite extends FunSuite {
       assert(contains(s, 1), "Union 1")
       assert(contains(s, 2), "Union 2")
       assert(!contains(s, 3), "Union 3")
+    }
+  }
+
+  test("intersect contains common elements of each set") {
+    new TestSets {
+      val a = union(s1, s2)
+      val b = union(s1, s3)
+      val c = intersect(a, b)
+      assert(contains(c, 1), "Intersect 1")
+      assert(!contains(c, 2), "Intersect 2")
+      assert(!contains(c, 3), "Intersect 3")
+    }
+  }
+
+  test("diff contains elements of set a not in set b") {
+    new TestSets {
+      val a = union(s1, s2)
+      val b = union(s1, s3)
+      val c = diff(a, b)
+      assert(!contains(c, 1), "Diff 1")
+      assert(contains(c, 2), "Diff 2")
+      assert(!contains(c, 3), "Diff 3")
+    }
+  }
+
+  test("filter contains those elements of set a that are in set b") {
+    new TestSets {
+      val a = union(union(s1, s2), s3)
+      val b = s1
+      val c = filter(a, b)
+      assert(contains(c, 1), "filter 1")
+      assert(!contains(c, 2), "filter 2")
+      assert(!contains(c, 3), "filter 3")
+    }
+  }
+
+  test("test all elements of set a satisfy a predicate") {
+    new TestSets {
+      val a = union(union(s1, s2), s3)
+      val predicate1 = (x: Int) => (x * 2) % 2 == 0
+      val predicate2 = (x: Int) => x == 1
+
+      forall(a, predicate1) shouldBe true
+      forall(a, predicate2) shouldBe false
+    }
+  }
+
+  test("test exists") {
+    new TestSets {
+      val a = union(union(s1, s2), s3)
+      val predicate1 = s1
+      val predicate2 = s2
+      val predicate3 = (x: Int) => x % 2 == 0
+      val predicate4 = (x: Int) => x == 10
+
+      exists(a, predicate1) shouldBe true
+      exists(a, predicate2) shouldBe true
+      exists(a, predicate3) shouldBe true
+      exists(a, predicate4) shouldBe false
     }
   }
 
