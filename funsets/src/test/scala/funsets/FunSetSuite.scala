@@ -153,7 +153,7 @@ class FunSetSuite extends FunSuite with Matchers {
     }
   }
 
-  test("test exists") {
+  test("test exists function") {
     new TestSets {
       val a = union(union(s1, s2), s3)
       val predicate1 = s1
@@ -165,6 +165,19 @@ class FunSetSuite extends FunSuite with Matchers {
       exists(a, predicate2) shouldBe true
       exists(a, predicate3) shouldBe true
       exists(a, predicate4) shouldBe false
+    }
+  }
+
+  test("test map function") {
+    new TestSets {
+      val a = union(union(s1, s2), s3)
+      val predicate1 = (x: Int) => (x * 2) % 2 == 0
+      val predicate2 = (x: Int) => x == 1
+
+      val b = map(a, x => x * 2)
+
+      b(1) shouldBe false
+      b(3) shouldBe false
     }
   }
 
