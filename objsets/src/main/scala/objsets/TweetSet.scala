@@ -34,6 +34,8 @@ class Tweet(val user: String, val text: String, val retweets: Int) {
   */
 abstract class TweetSet {
 
+  def isEmpty: Boolean
+
   /**
     * This method takes a predicate and returns a subset of all the elements
     * in the original set for which the predicate is true.
@@ -107,6 +109,9 @@ abstract class TweetSet {
 }
 
 class Empty extends TweetSet {
+
+  def isEmpty = true
+
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = acc
 
   def union(that: TweetSet): TweetSet = that
@@ -131,6 +136,8 @@ class Empty extends TweetSet {
 
 class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
+  def isEmpty = false
+
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = {
     right.filterAcc(p, left.filterAcc(p, if (p(elem)) acc.incl(elem) else acc))
   }
@@ -138,19 +145,8 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   def union(that: TweetSet): TweetSet = right union (left union that.incl(elem))
 
   def mostRetweeted: Tweet = {
-    var tweet: Tweet = elem
-
-    if (!left.isInstanceOf[Empty]) {
-      val lmr = left.mostRetweeted
-      if (lmr.retweets > tweet.retweets) tweet = lmr
-    }
-
-    if (!right.isInstanceOf[Empty]) {
-      val rmr = right.mostRetweeted
-      if (rmr.retweets > tweet.retweets) tweet = rmr
-    }
-
-    tweet
+    val popular = left.union(right).filter(_.retweets > elem.retweets)
+    if(popular.isEmpty) elem else popular.mostRetweeted
   }
 
   def descendingByRetweet: TweetList = {
