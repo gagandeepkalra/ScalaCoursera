@@ -228,7 +228,7 @@ object Huffman {
   def convert(tree: CodeTree): CodeTable = {
     def convertTree(node: CodeTree, bits: List[Bit]): CodeTable = node match {
       case Fork(l, r, _, _) => convertTree(l, 0 :: bits) ::: convertTree(r, 1 :: bits)
-      case Leaf(c, _) => List((c, bits))
+      case Leaf(c, _) => List((c, bits.reverse))
     }
 
     convertTree(tree, List())
