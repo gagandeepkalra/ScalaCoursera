@@ -169,11 +169,36 @@ object Anagrams {
   private def sentenceAnagrams(occurrences: Occurrences): List[Sentence] = {
     if (occurrences.isEmpty) List(Nil)
     else {
+      // solution 1.
       for {
         subsetOfOccurrences <- combinations(occurrences); if dictionaryByOccurrences.contains(subsetOfOccurrences)
-        word <- dictionaryByOccurrences(subsetOfOccurrences)
         sentence <- sentenceAnagrams(subtract(occurrences, subsetOfOccurrences))
+        word <- dictionaryByOccurrences(subsetOfOccurrences)
       } yield word :: sentence
+
+      // Solution 2.
+      combinations(occurrences).withFilter(dictionaryByOccurrences.contains)
+        .flatMap(subsetOfOccurrences => sentenceAnagrams(subtract(occurrences, subsetOfOccurrences))
+          .flatMap(sentence => dictionaryByOccurrences(subsetOfOccurrences)
+            .map(word => word :: sentence)))
+    }
+  }
+
+  private def sentenceAnagramsMemo(occurrences: Occurrences): List[Sentence] = {
+    if (occurrences.isEmpty) List(Nil)
+    else {
+      // solution 1.
+      for {
+        subsetOfOccurrences <- combinations(occurrences); if dictionaryByOccurrences.contains(subsetOfOccurrences)
+        sentence <- sentenceAnagramsMemo(subtract(occurrences, subsetOfOccurrences))
+        word <- dictionaryByOccurrences(subsetOfOccurrences)
+      } yield word :: sentence
+
+      // Solution 2.
+      combinations(occurrences).withFilter(dictionaryByOccurrences.contains)
+        .flatMap(subsetOfOccurrences => sentenceAnagramsMemo(subtract(occurrences, subsetOfOccurrences))
+          .flatMap(sentence => dictionaryByOccurrences(subsetOfOccurrences)
+            .map(word => word :: sentence)))
     }
   }
 }
