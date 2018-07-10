@@ -13,3 +13,9 @@ repeat {
 } until (i < 5)
 
 
+
+def recur(n: => Int): Stream[Int] = {
+  n #:: recur(n + 1)
+}
+
+recur(10).take(10)
