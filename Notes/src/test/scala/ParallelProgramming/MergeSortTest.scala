@@ -19,7 +19,7 @@ class MergeSortTest extends FunSuite with Matchers {
   }
 
   private def verifyIsSorted(as: Array[Int]): Boolean = {
-    as.grouped(2).forall(ar => if (ar.length == 2) ar(1) >= ar(0) else true)
+    as.zip(as.sorted).forall { case (x, y) => x == y }
   }
 
 }
