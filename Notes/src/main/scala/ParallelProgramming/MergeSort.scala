@@ -1,6 +1,7 @@
 package ParallelProgramming
 
 import ParallelProgramming.common.common.parallel
+import org.scalameter._
 
 object MergeSort {
 
@@ -69,11 +70,44 @@ object MergeSort {
   def quickSort(ls: List[Int]): List[Int] = {
     ls match {
       case List() => ls
-      case head :: tail => {
+      case head :: tail =>
         val (first, second) = tail.partition(_ < head)
         quickSort(first) ::: (head :: quickSort(second))
-      }
     }
   }
 
+  private val standardConfig = config(
+    Key.exec.minWarmupRuns -> 20,
+    Key.exec.maxWarmupRuns -> 60,
+    Key.exec.benchRuns -> 60,
+    Key.verbose -> true
+  ).withWarmer(new Warmer.Default)
+
+  private def initialize(xs: Array[Int]) {
+    var i = 0
+    while (i < xs.length) {
+      xs(i) = i % 100
+      i += 1
+    }
+  }
+
+  def main(args: Array[String]) {
+    val length = 10000000
+    val maxDepth = 7
+    val xs = new Array[Int](length)
+    val seqtime: Quantity[Double] = standardConfig setUp {
+      _ => initialize(xs)
+    } measure {
+      parallelMergeSort(xs, 0)
+    }
+    println(s"sequential sum time: $seqtime ms")
+
+    val partime: Quantity[Double] = standardConfig setUp {
+      _ => initialize(xs)
+    } measure {
+      parallelMergeSort(xs, maxDepth)
+    }
+    println(s"fork/join time: $partime ms")
+    println(s"speedup: ${seqtime.value / partime.value}")
+  }
 }
